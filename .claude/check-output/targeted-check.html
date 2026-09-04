@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><style>html,body{margin:0;width:1600px;height:1000px;overflow:hidden}object{display:block;width:1600px;height:1000px}</style><object id="svg" type="image/svg+xml" data="file:///d:/gitProject/agent-learn/ptga-agent-framework.svg"></object><script>
+setTimeout(()=>{const d=document.getElementById('svg').contentDocument,s=d.documentElement;
+const esc=t=>(t||'').trim();const box=e=>{let b=e.getBBox();return{x:b.x,y:b.y,w:b.width,h:b.height,r:b.x+b.width,b:b.y+b.height}};
+const getText=t=>[...d.querySelectorAll('text')].find(e=>esc(e.textContent)===t);
+const stageRects=[...d.querySelectorAll('rect.stage')];
+const stageInfo=stageRects.map((r,si)=>{const rb=box(r);const texts=[...d.querySelectorAll('text.text')].filter(t=>{const b=box(t);return b.x>=rb.x&&b.r<=rb.r&&b.y>=rb.y&&b.b<=rb.b}).map(t=>({text:esc(t.textContent),box:box(t)}));const bullets=[...d.querySelectorAll('circle.bullet')].filter(c=>{let b=box(c);return b.x>=rb.x&&b.r<=rb.r&&b.y>=rb.y&&b.b<=rb.b}).map(box);return{stage:si+1,box:rb,texts,bullets}});
+const wanted=['实训任务知识库','匹配度判定','完成结果与教学反馈','学生能力档案'];const targets={};for(const w of wanted){const e=getText(w);targets[w]=e?box(e):null}
+const paths=[...d.querySelectorAll('path')].map((e,i)=>({i,d:e.getAttribute('d'),cls:e.getAttribute('class'),box:box(e)}));
+const all=[...d.querySelectorAll('text,rect.stage,rect.box,rect.soft,rect.head,path,line,circle,polygon')];const allbox=box(s);
+document.body.innerText=JSON.stringify({svgBBox:allbox,viewport:{w:innerWidth,h:innerHeight},stageInfo,targets,paths})},1500)
+</script>

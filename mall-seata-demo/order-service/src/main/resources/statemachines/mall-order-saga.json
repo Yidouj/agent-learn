@@ -1,0 +1,79 @@
+{
+  "Name": "mallOrderSaga",
+  "Comment": "Deduct stock and points, create the order, then confirm; compensate completed states in reverse order",
+  "Version": "1.0.0",
+  "StartState": "DeductStock",
+  "States": {
+    "DeductStock": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "deductStock",
+      "IsPersist": false,
+      "CompensateState": "RestoreStock",
+      "Input": ["$.[request]"],
+      "Next": "DeductPoints"
+    },
+    "DeductPoints": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "deductPoints",
+      "IsPersist": false,
+      "CompensateState": "RestorePoints",
+      "Input": ["$.[request]"],
+      "Next": "CreateOrder"
+    },
+    "CreateOrder": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "createOrder",
+      "IsPersist": false,
+      "CompensateState": "CancelOrder",
+      "Input": ["$.[request]"],
+      "Next": "InjectRequestedFailure"
+    },
+    "InjectRequestedFailure": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "injectRequestedFailure",
+      "IsPersist": false,
+      "Input": ["$.[request]"],
+      "Catch": [{"Exceptions": ["java.lang.Exception"], "Next": "CompensationTrigger"}],
+      "Next": "ConfirmOrder"
+    },
+    "ConfirmOrder": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "confirmOrder",
+      "IsPersist": false,
+      "Input": ["$.[request]"],
+      "Next": "Succeed"
+    },
+    "RestoreStock": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "restoreStock",
+      "IsPersist": false,
+      "IsForCompensation": true,
+      "Input": ["$.[request]"]
+    },
+    "RestorePoints": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "restorePoints",
+      "IsPersist": false,
+      "IsForCompensation": true,
+      "Input": ["$.[request]"]
+    },
+    "CancelOrder": {
+      "Type": "ServiceTask",
+      "ServiceName": "sagaBranches",
+      "ServiceMethod": "cancelOrder",
+      "IsPersist": false,
+      "IsForCompensation": true,
+      "Input": ["$.[request]"]
+    },
+    "CompensationTrigger": {"Type": "CompensationTrigger", "Next": "Compensated"},
+    "Compensated": {"Type": "Fail", "ErrorCode": "RequestedFailure", "Message": "Order Saga compensated"},
+    "Succeed": {"Type": "Succeed"}
+  }
+}

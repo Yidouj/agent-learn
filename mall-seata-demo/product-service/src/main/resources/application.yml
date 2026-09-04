@@ -1,0 +1,21 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:h2:file:./data/product;AUTO_SERVER=TRUE
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+seata:
+  enabled: true
+  application-id: product-service
+  tx-service-group: mall-tx-group
+  service:
+    vgroup-mapping:
+      mall-tx-group: default
+    grouplist:
+      default: 127.0.0.1:8091

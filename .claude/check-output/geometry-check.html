@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><style>html,body{margin:0;width:1600px;height:1000px;overflow:hidden}object{display:block;width:1600px;height:1000px}</style><object id="svg" type="image/svg+xml" data="file:///d:/gitProject/agent-learn/ptga-agent-framework.svg"></object><script>
+setTimeout(()=>{const d=document.getElementById('svg').contentDocument,s=d.documentElement;
+const els=[...d.querySelectorAll('text,rect,path,line,circle,polygon')];
+const boxes=els.map((e,i)=>{const b=e.getBBox();return {i,tag:e.tagName,id:e.id||'',cls:e.getAttribute('class')||'',text:(e.textContent||'').trim(),d:e.getAttribute('d')||'',x:+b.x.toFixed(2),y:+b.y.toFixed(2),w:+b.width.toFixed(2),h:+b.height.toFixed(2),right:+(b.x+b.width).toFixed(2),bottom:+(b.y+b.height).toFixed(2)}});
+document.body.innerText=JSON.stringify({viewport:{w:innerWidth,h:innerHeight},boxes})},1500)
+</script>

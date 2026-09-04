@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/ydj_c/.claude/skills/**)",
+      "Read(//c/Users/ydj_c/.claude/skills/weekly-report-generator/**)",
+      "Read(//c/Users/ydj_c/.claude/skills/code-flowchart/**)",
+      "WebSearch"
+    ]
+  }
+}
