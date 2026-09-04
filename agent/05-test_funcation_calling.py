@@ -132,6 +132,66 @@ def run_agent(user_messages: str) -> str:
 
         # 循环回去 → AI 看到工具结果，决定下一步
 
+
+def run_agent_loop():
+    """多轮对话 Agent。"""
+    messages = [
+        {"role": "system", "content": "你是一个天气助手，帮用户查询天气。用自然语言回答。"},
+    ]
+
+    print("🌤️ 天气助手已启动，输入 'quit' 退出\n")
+
+    llm = get_llm()
+
+    while True:
+        user_input = input("👤 你: ")
+        if user_input.lower() in ["quit", "exit", "退出"]:
+            print("👋 再见！")
+            break
+
+        messages.append({"role": "user", "content": user_input})
+
+        while True:
+            # 1. 感知 + 决策：AI 决定是否调用工具
+            response = llm.chat.completions.create(
+                model=os.getenv("DEEPSEEK_MODEL"),
+                messages=messages,
+                tools=tools_schema,
+            )
+
+            msg = response.choices[0].message
+
+            # 2. 判断：AI 没调用工具 → 任务完成，返回结果
+            if not msg.tool_calls:
+                print(f"🤖 {msg.content}\n")
+                messages.append(msg)
+                break
+
+            # 3. 行动：AI 要调工具 → 执行工具
+            messages.append(msg)  # 先把 AI 的消息加入历史
+
+            for tool_call in msg.tool_calls:
+                tool_name = tool_call.function.name
+                tool_arguments = json.loads(tool_call.function.arguments)
+
+                print(f"调用工具: {tool_name}，参数: {tool_arguments}")
+
+                if tool_name == "get_weather":
+                    tool_response = get_weather(**tool_arguments)
+                else:
+                    tool_response = {"error": f"未知工具: {tool_name}"}
+
+                # 4. 观察：把工具结果返回给 AI
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": json.dumps(tool_response, ensure_ascii=False),
+                    }
+                )
+
+            # 循环回去 → AI 看到工具结果，决定下一步
+
+
 if __name__ == "__main__":
-    msg = run_agent("请帮我查询北京今天的天气")
-    print(msg)
+    run_agent_loop()
