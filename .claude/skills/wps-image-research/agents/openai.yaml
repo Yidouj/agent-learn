@@ -1,0 +1,4 @@
+interface:
+  display_name: "WPS 图片研究与脑图重建"
+  short_description: "从参考图片提取结构并生成可编辑 WPS 思维导图 .pos 文件。"
+  default_prompt: "使用这个 skill 分析参考图片的层级、分支、关系线和文本，重建为可编辑的 WPS 思维导图 .pos；优先使用目标 WPS 版本导出的模板验证格式，禁止把整张图片嵌入文件，并在可能时通过 WPS 导入和重新导出验证。"
